@@ -58,7 +58,31 @@ maxsteps <- max(step_avg)
 The maximum number of steps on average across all the days is `r maxsteps` in the interval number `r intmax`.
 
 ## Imputing missing values
+Calculate the total number of missing values in the dataset.
+```{r}
+na_num <- sum(!complete.cases(activity$steps))
+```
+The total number of missing values in the dataset is `r na_num`.
 
+Use the mean/median of a 5-minute interval that has NAs to fill in all of the missing values in that interval. 
 
+```{r}
+data1 <- activity
+for (i in 1:length(activity$steps)) {
+    if (is.na(activity$steps[i])) {
+        for (j in 1:length(step_average)) {
+            if (as.character(activity$interval[i]) == names(step_average[j])) 
+                activity$steps[i] = step_average[j]
+        }
+    }
+}
+data2 <- activity
+clean_step_sum <- tapply(data2$steps, data2$date, sum, na.rm = TRUE, 
+    simplify = TRUE)
+```
+
+```{r}
+hist(clean_step_sum, xlab = "number of steps", main = "Histogram of the total number of steps taken each day")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?

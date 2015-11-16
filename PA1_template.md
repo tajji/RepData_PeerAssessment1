@@ -1,5 +1,9 @@
-# Reproducible Research: Peer Assessment 1
-
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 ## Loading and preprocessing the data
 
 Loading the data
@@ -64,6 +68,14 @@ plot(x = levels(data$interval), y = step_avg, type = "l", xlab = "time",
 Finding 5-minute interval containing maximum number of steps on average across all the days.
 
 ```r
+max(step_avg)
+```
+
+```
+## [1] 179.1311
+```
+
+```r
 names(which.max(step_avg))
 ```
 
@@ -71,4 +83,39 @@ names(which.max(step_avg))
 ## [1] "835"
 ```
 
-The maximum number of steps on average across all the days is 179.1311475 in the interval number `intmax`.
+The maximum number of steps on average across all the days is 179.1311475 in the interval number 835.
+
+## Imputing missing values
+Calculate the total number of missing values in the dataset.
+
+```r
+na_num <- sum(!complete.cases(activity$steps))
+```
+The total number of missing values in the dataset is 0.
+
+Use the mean/median of a 5-minute interval that has NAs to fill in all of the missing values in that interval. 
+
+
+```r
+data1 <- activity
+for (i in 1:length(activity$steps)) {
+    if (is.na(activity$steps[i])) {
+        for (j in 1:length(step_average)) {
+            if (as.character(activity$interval[i]) == names(step_average[j])) 
+                activity$steps[i] = step_average[j]
+        }
+    }
+}
+data2 <- activity
+clean_step_sum <- tapply(data2$steps, data2$date, sum, na.rm = TRUE, 
+    simplify = TRUE)
+```
+
+
+```r
+hist(clean_step_sum, xlab = "number of steps", main = "Histogram of the total number of steps taken each day")
+```
+
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
+
+## Are there differences in activity patterns between weekdays and weekends?
